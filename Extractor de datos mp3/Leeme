@@ -1,0 +1,22 @@
+; ----------------------------------------------
+; ---- EXTRACTOR DE DATOS DE UN ARCHIVO MP3 ----
+; ----------------------------------------------
+; Obtiene los siguientes datos
+;   * Título de la pista
+;	* Artista
+;	* Título del Álbum
+;	* Género
+;   * Num. de pista
+;   * Año
+; 
+; ---------------------------------------------
+; ----           Elaborado por             ----
+; ----     PERALTA ROSALES OSCAR ESAU      ----
+; ----        Ing. en Computación          ----
+; ---------------------------------------------
+;
+;
+; NOTA: El nombre del archivo mp3 debe estar sin espacios para que pueda ser reconocido no debe superar los 31 caracteres
+;       Se debe agregar la extensión ".mp3" al final del nombre
+;		El archivo principal "song" Se debe ligar junto con el archivo de funciones "fun"
+;

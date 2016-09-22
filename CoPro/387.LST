@@ -1,0 +1,206 @@
+Turbo Assembler	 Version 3.1	    06/11/14 09:09:00	    Page 1
+calcu.ASM
+
+
+
+      1					 ;Versión 1.1
+      2					 ; 1.1	 Los números se	teclean	directo.
+      3					 ; 1.0	 Funcional, pero sólo con la suma. Requiere un <enter> para proceder
+      4					 ;	 a teclear un número.
+      5	    0000			 .model	small
+      6					 .386
+      7					 extrn	 fdstackf:near
+      8					 extrn	 fdstacki:near
+      9					 extrn	 fdespbcd:near
+     10					 extrn	 fdespflo:near
+     11					 extrn	 fleebcd:near
+     12					 extrn	 print_2:near
+     13					 extrn	 print_1:near
+     14					 extrn	 print_4:near
+     15					 extrn	 salto:near
+     16					 ;extrn	 hexdum:near
+     17					 ;extrn	 lee1_ne:near
+     18	    0000			 .stack
+     19	    0000			 .data
+     20
+     21	    0000  00000000000000000000	 FBCDt	 dt	 0h
+     22	    000A  ????????		 RESUL	 dd	 ?
+     23
+     24	    000E  00			 flagdsp db	 0
+     25
+     26	    000F  ????			 STWD	 dw	 ?
+     27
+     28	    0011			 .code
+     29					 ;-------MACROS------------
+     30					 clear_screen macro
+     31						 pusha
+     32						 mov ax, 0600h
+     33						 mov bh, 00001111b
+     34						 mov cx, 0
+     35						 mov dh, 24
+     36						 mov dl, 79
+     37						 int 10h
+     38						 popa
+     39					 endm
+     40					 print	 macro cadena
+     41					 local dbcad,dbfin,salta
+     42						 pusha			 ;respalda todo
+     43						 push ds		 ;respalda DS, porque vamos a usar segmento de código
+     44						 mov dx,cs		 ;segmento de código será también de datos
+     45						 mov ds,dx
+     46
+     47						 mov dx,offset dbcad	 ;dirección de cadena (en segmento de código)
+     48						 mov ah,09h
+     49						 int 21h		 ;desplegar
+     50						 jmp salta		 ;saltar datos para que	no sean	ejecutados
+     51						 dbcad db cadena	 ;aquí estará la cadena	pasada en la sustitución
+     52						 dbfin db 24h		 ;fin de cadena
+     53					 salta:	 pop ds			 ;etiqueta local de salto, recuperar segmento de datos
+     54						 popa			 ;recuperar registros
+     55					 endm
+     56					 ;-------------------------
+     57	    0000  B8 0000s		 main:	 mov ax,@data
+Turbo Assembler	 Version 3.1	    06/11/14 09:09:00	    Page 2
+calcu.ASM
+
+
+
+     58	    0003  8E D8				 mov ds,ax
+     59	    0005  8E C0				 mov es,ax
+     60
+     61	    0007  9B DB	E3			 finit	 ;Reseteo al coprocesador por si hay basura
+     62
+     63						 ;call fdstackf
+     64	    000A				 repite:
+     65							 print "Introduce un numero"
+1    66	    000A  60				 pusha			 ;respalda todo
+1    67	    000B  1E				 push ds		 ;respalda DS, porque vamos a usar segmento de código
+1    68	    000C  8C CA				 mov dx,cs		 ;segmento de código será también de datos
+1    69	    000E  8E DA				 mov ds,dx
+1    70	    0010  BA 001Ar			 mov dx,offset ??0000	 ;dirección de "Introduce un numero" (en segmento de código)
+1    71	    0013  B4 09				 mov ah,09h
+1    72	    0015  CD 21				 int 21h		 ;desplegar
+1    73	    0017  EB 15	90			 jmp ??0002		 ;saltar datos para que	no sean	ejecutados
+1    74	    001A  49 6E	74 72 6F 64 75+		 ??0000	db "Introduce un numero"	 ;aquí estará la "Introduce un numero"	    +
+     75		  63 65	20 75 6E 20 6E+	 pasada	en la sustitución
+     76		  75 6D	65 72 6F
+1    77	    002D  24				 ??0001	db 24h		 ;fin de "Introduce un numero"
+1    78	    002E  1F			 ??0002: pop ds			 ;etiqueta local de salto, recuperar segmento de datos
+1    79	    002F  61				 popa			 ;recuperar registros
+     80	    0030  E8 0000e			 call salto
+     81	    0033  BA 0000r			 mov dx,offset FBCDt
+     82	    0036  E8 0000e			 call fleebcd	 ;poner	en FBCDt (apuntado por DX)
+     83	    0039  DF 26	0000r			 fbld FBCDt		 ;cargalo a la pila
+     84						 ;call fdstackf	 ;desplegar pila como flotantes
+     85	    003D  8A D0				 mov dl,al
+     86	    003F  E8 0000e			 call print_4
+     87
+     88	    0042  3C 2B				 cmp al,02Bh ;suma
+     89	    0044  75 07	90 90			 jne sig
+     90	    0048  DE C1				 fadd
+     91	    004A  EB 2E	90			 jmp repites
+     92
+     93	    004D  3C 2D			 sig:	 cmp al,02Dh ;Resta
+     94	    004F  75 07	90 90			 jne	 sig1
+     95	    0053  DE E9				 fsub
+     96	    0055  EB 23	90			 jmp repites
+     97
+     98	    0058  3C 2F			 sig1:	 cmp al,02fh ;Div
+     99	    005A  75 07	90 90			 jne	 sig2
+    100	    005E  DE F9				 fdiv
+    101	    0060  EB 18	90			 jmp repites
+    102
+    103	    0063  3C 2A			 sig2:	 cmp al,02ah	 ;Mul
+    104	    0065  75 07	90 90			 jne	 sig3
+    105	    0069  DE C9				 fmul
+    106	    006B  EB 0D	90			 jmp repites
+    107
+    108	    006E  3C 0D			 sig3:	 cmp al,0dh	 ;enter
+    109	    0070  74 08	90 90			 je repites
+    110
+    111
+    112	    0074  3C 1B				 cmp al,01bh ;esc
+    113	    0076  74 1B	90 90			 je fin
+    114
+Turbo Assembler	 Version 3.1	    06/11/14 09:09:00	    Page 3
+calcu.ASM
+
+
+
+    115	    007A				 repites:
+    116	    007A  E8 0000e			 call salto
+    117	    007D  E8 0000e			 call fdstackf
+    118	    0080  E8 0000e			 call salto
+    119	    0083  D9 1E	000Ar			 fstp RESUL
+    120	    0087  BA 000Ar			 mov dx,offset RESUL
+    121	    008A  E8 0000e			 call fdespflo
+    122	    008D  E8 0000e			 call salto
+    123	    0090  E9 FF77			 jmp repite
+    124
+    125
+    126	    0093				 fin:.exit 0
+1   127	    0093  B8 4C00			 MOV	 AX,04C00h
+1   128	    0096  CD 21				 INT	 21h
+    129
+    130					 end
+Turbo Assembler	 Version 3.1	    06/11/14 09:09:00	    Page 4
+Symbol Table
+
+
+
+
+Symbol Name			  Type	 Value
+
+??0000				  Byte	 _TEXT:001A
+??0001				  Byte	 _TEXT:002D
+??0002				  Near	 _TEXT:002E
+??DATE				  Text	 "06/11/14"
+??FILENAME			  Text	 "calcu	  "
+??TIME				  Text	 "09:09:00"
+??VERSION			  Number 030A
+@32BIT				  Text	 0
+@CODE				  Text	 _TEXT
+@CODESIZE			  Text	 0
+@CPU				  Text	 0F0FH
+@CURSEG				  Text	 _TEXT
+@DATA				  Text	 DGROUP
+@DATASIZE			  Text	 0
+@FILENAME			  Text	 CALCU
+@INTERFACE			  Text	 00H
+@MODEL				  Text	 2
+@STACK				  Text	 DGROUP
+@WORDSIZE			  Text	 2
+FBCDT				  Tbyte	 DGROUP:0000
+FDESPBCD			  Near	 ----:---- Extern
+FDESPFLO			  Near	 ----:---- Extern
+FDSTACKF			  Near	 ----:---- Extern
+FDSTACKI			  Near	 ----:---- Extern
+FIN				  Near	 _TEXT:0093
+FLAGDSP				  Byte	 DGROUP:000E
+FLEEBCD				  Near	 ----:---- Extern
+MAIN				  Near	 _TEXT:0000
+PRINT_1				  Near	 ----:---- Extern
+PRINT_2				  Near	 ----:---- Extern
+PRINT_4				  Near	 ----:---- Extern
+REPITE				  Near	 _TEXT:000A
+REPITES				  Near	 _TEXT:007A
+RESUL				  Dword	 DGROUP:000A
+SALTO				  Near	 ----:---- Extern
+SIG				  Near	 _TEXT:004D
+SIG1				  Near	 _TEXT:0058
+SIG2				  Near	 _TEXT:0063
+SIG3				  Near	 _TEXT:006E
+STWD				  Word	 DGROUP:000F
+
+Macro Name
+
+CLEAR_SCREEN
+PRINT
+
+Groups & Segments		  Bit Size Align  Combine Class
+
+DGROUP				  Group
+  STACK				  16  0400 Para	  Stack	  STACK
+  _DATA				  16  0011 Word	  Public  DATA
+_TEXT				  16  0098 Word	  Public  CODE
+

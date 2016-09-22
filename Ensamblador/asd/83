@@ -1,0 +1,53 @@
+
+mov ax,offset num1
+push ax
+
+mov ax,offset num2
+push ax
+
+mov ax,offset num3
+push ax
+
+call fun
+
+add sp,6
+
+;-----------------------------
+push bp
+mov bp,sp
+sub sp,6 ; 3 variables locales bp-2
+
+clc
+mov bx,[bp+8] ;num1
+add bx,4
+mov [bp-2],bx
+
+mov bx,[bp+6] ;num1
+add bx,4
+mov [bp-4],bx
+
+mov bx,[bp+4] ;num1
+add bx,4
+mov [bp-6],bx
+
+
+
+mov cx,5h
+
+ciclo:
+mov bx,[bp-2]
+mov al,[bx]
+adc bx,[bp-4]
+adc al,[bx]
+daa
+mov bx,[bp - 6]
+mov [bx],al
+dec word ptr [bp-2]
+dec word ptr [bp-4]
+dec word ptr [bp-6]
+
+loop ciclo
+
+mov sp,bp
+pop bp
+ret

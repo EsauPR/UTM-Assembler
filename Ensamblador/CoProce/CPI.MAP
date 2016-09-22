@@ -1,0 +1,13 @@
+
+ Start  Stop   Length Name               Class
+
+ 00000H 002C0H 002C1H _TEXT              CODE
+ 002D0H 00415H 00146H _DATA              DATA
+ 00420H 00C1FH 00800H STACK              STACK
+
+Error: Undefined symbol NEWLINE in module 387.ASM
+Error: Undefined symbol DES1 in module 387.ASM
+Error: Undefined symbol DES2 in module 387.ASM
+Error: Undefined symbol SPC in module 387.ASM
+Program entry point at 0000:0000
+

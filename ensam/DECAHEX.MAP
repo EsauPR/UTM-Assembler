@@ -1,0 +1,12 @@
+
+ Start  Stop   Length Name               Class
+
+ 00000H 0000FH 00010H _TEXT              CODE
+ 00010H 00010H 00000H _DATA              DATA
+ 00010H 0040FH 00400H STACK              STACK
+
+Error: Undefined symbol DECTOHEX in module DECAHEX.ASM
+Error: Undefined symbol NEWLINE in module DECAHEX.ASM
+Error: Undefined symbol DES4 in module DECAHEX.ASM
+Program entry point at 0000:0000
+

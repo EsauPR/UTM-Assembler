@@ -1,0 +1,3 @@
+MOUNT D D:\
+set PATH=D:\....
+keyb es

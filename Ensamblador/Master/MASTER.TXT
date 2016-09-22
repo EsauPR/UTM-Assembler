@@ -1,0 +1,30 @@
+MASTER 0.30
+
+MASTER is part of the Serial Device Simulator project.
+
+MASTER is a simple program to test your serial device.
+
+MASTER is easy to use. You may
+
+1: enter some test command
+2: press ENTER to send it over the serial port
+3: wait to read the response
+
+If you need to read more from the serial port just press ENTER.
+
+If you want to stop the program give the 'end' command; e.g. type in end and press ENTER.
+
+
+You may configure MASTER by adapting the MASTER.INI file. By default
+this file is as follows:
+
+comport:1
+baudrate:9600
+databits:8
+stopbits:1
+parity:none
+responses:2
+
+Most lines speak for themselves. The last line is a bit odd. The 'responses' value
+is the number of times MASTER will read a line from the device. In many cases the
+number of response lines is just 1, but in some cases in might be 2 (or more).

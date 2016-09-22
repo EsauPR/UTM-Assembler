@@ -1,0 +1,26 @@
+TAREA2.com
+
+/* Leer del teclado */
+
+mov ah,01
+int 21
+
+
+/* Comparamos */
+
+cmp al,61
+
+/* Asumimos que es Mayuscula */
+mov dx,124
+
+/* si es Mayuscula saltamos hasta mov ah,09 */
+jl 10E
+
+mov dx,114
+mov ah,09
+int 21
+int 20
+
+
+e 114 0d 0a 'Es Minuscula$'
+e 124 od oa 'Es mayuscula$'

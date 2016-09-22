@@ -1,0 +1,21 @@
+Source index SI lectura Data Segment (ds)
+Destination index DI escritura Extra Segment (es)
+
+		=> mov AL,[SI]
+LODS	=> inc SI
+		=> 
+
+LODSB 8 bits
+LODSW 16 bits
+
+
+STOSB	=> MOV [DI],AL
+STOSW   => INC DI
+
+
+mov si,offset linea1
+mov di,offset linea2
+cld
+mov cx,10
+repe cmpse
+ret

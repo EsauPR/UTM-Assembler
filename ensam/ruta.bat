@@ -1,0 +1,1 @@
+path=%path%;C:\Documents and Settings\alumnos\Mis documentos\ensam\tasm
